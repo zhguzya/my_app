@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import requests
 from db import fill_dhcp_table, fill_traffic_table
 from config import MIKROTIK_USER, MIKROTIK_PASSWORD, URL_DHCP_TABLE, URL_TRAFFIC_TABLE
