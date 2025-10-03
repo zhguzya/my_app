@@ -2,8 +2,8 @@ from flask import Flask, request
 import requests
 from flask_restx import Resource, Api
 import time 
-from hh import get_hh_vacancy
-from hua_token import refresh_access_token
+# from hh import get_hh_vacancy
+# from hua_token import refresh_access_token
 from mikrotik import get_traffic_from_mikrotik, get_dhcp_table_from_mikrotik
 from db import create_db_tables, get_data_from_db
 from config import DATABASE_NAME, SCHEMA_FILE
