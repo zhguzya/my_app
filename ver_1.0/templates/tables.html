@@ -1,0 +1,28 @@
+<a href="{{ url_for('ui.export_csv') }}" class="btn btn-primary">
+    Скачать CSV
+</a>
+
+<table id="dhcpTable" class="display">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>IP</th>
+            <th>MAC</th>
+            <th>Host</th>
+            <th>Dynamic</th>
+            <th>Removed</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.ip }}</td>
+            <td>{{ row.mac }}</td>
+            <td>{{ row.host }}</td>
+            <td>{{ "Yes" if row.dynamic else "No" }}</td>
+            <td>{{ "Yes" if row.removed else "No" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
