@@ -13,7 +13,6 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(ui_bp)
 
 
-# if app.config.get("INIT_DB", False): #автосоздание таблиц
 init_db()            
             
 if __name__ == "__main__":
