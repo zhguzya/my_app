@@ -4,11 +4,7 @@ from config import DATABASE_NAME_ORM, DATABASE_NAME_USERS
 
 #mikrotik_db
 BaseMikrotik = declarative_base()
-<<<<<<< HEAD
-engine_mikrotik = create_engine(f'sqlite:///{DATABASE_NAME_ORM}', echo=True) #
-=======
-engine_mikrotik = create_engine(f'sqlite:///{DATABASE_NAME_ORM}', echo=True) #унести в config
->>>>>>> my_branch
+engine_mikrotik = create_engine(f'sqlite:///{DATABASE_NAME_ORM}', echo=True) #1унести в config
 SessionMikrotik = sessionmaker(bind=engine_mikrotik)
 
 #users_db
