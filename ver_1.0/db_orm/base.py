@@ -9,5 +9,5 @@ SessionMikrotik = sessionmaker(bind=engine_mikrotik)
 
 #users_db
 BaseUsers = declarative_base()
-engine_users = create_engine(f'sqlite:///{DATABASE_NAME_USERS}', echo=True)
+engine_users = create_engine(f'sqlite:///{DATABASE_NAME_USERS}', echo=True)#унести в config
 SessionUsers = sessionmaker(bind=engine_users)
