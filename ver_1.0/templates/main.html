@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Main</title></head>
+
+<head>
+  <meta charset="utf-8">
+  <title>Main</title>
+
+  {% if updating %}
+  <meta http-equiv="refresh" content="2">
+  {% endif %}
+</head>
+
 <body>
   <h2>Привет, {{ username }}!</h2>
 
@@ -11,6 +20,10 @@
 
   {% if output %}
     <pre>{{ output }}</pre>
+  {% endif %}
+
+  {% if updating %}
+  <meta http-equiv="refresh" content="2">
   {% endif %}
 
   <br><a href="{{ url_for('auth.logout') }}">Выйти</a>
