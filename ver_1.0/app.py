@@ -9,7 +9,6 @@ from db_orm import init_db
 app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY_SESSION
 
-
 # Регистрируем Blueprint
 app.register_blueprint(api_bp)
 app.register_blueprint(auth_bp)
