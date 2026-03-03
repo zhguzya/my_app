@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>Main</title>
 
-  {% if updating %}
+  {% if refresh_page %}
   <meta http-equiv="refresh" content="2">
   {% endif %}
 </head>
@@ -18,13 +18,15 @@
     <button type="submit" name="from_mikrotik">Обновить данные с Mikrotik</button>
   </form>
 
+  
+  {% if job_status %}
+    <p><strong>Статус задачи:</strong>{{ job_status }}</p>
+  {% endif %}
+
   {% if output %}
     <pre>{{ output }}</pre>
   {% endif %}
 
-  {% if updating %}
-  <meta http-equiv="refresh" content="2">
-  {% endif %}
 
   <br><a href="{{ url_for('auth.logout') }}">Выйти</a>
   <br><a href="/api">Открыть Swagger API</a>
