@@ -8,6 +8,8 @@ from redis import Redis
 from rq import Queue, Worker
 from rq.job import Job
 import json
+from config import REDIS_ENABLED
+
 
 
 ui_bp = Blueprint("ui", __name__)
@@ -39,37 +41,53 @@ def main():
                      f"DHCP: {data['dhcp_from_db']}\n"
                      f"DHCP_HISTORY: {data['dhcp_history_from_db']}\n"
                      f"Traffic: {data['traf_from_db']}\n")
+            
+            return render_template("main.html", username=session["user"]["username"], output=output)
 
         elif "from_mikrotik" in request.form:
-            # data = refresh_all_data()
-            # output = f"Обновлены данные с Mikrotik: {data}"
-            job = q.enqueue(refresh_all_data)
-            # output = f"Задача отправлена в очередь! Job ID: {job.id}"
-            session["job_id"] = job.id
-            return redirect(url_for("ui.main"))
-        
+
+            if not REDIS_ENABLED:
+                # На Mac: вызываем функцию и сразу показываем результат
+                data = refresh_all_data()
+                output = f"Обновлены данные с Mikrotik: {data}"
+            
+            else:
+                # на VPS создаем задачу
+                job_id = session.get("job_id")
+                if not job_id:
+                    try:
+                        job = q.enqueue(refresh_all_data)
+                        session["job_id"] = job.id
+                        return redirect(url_for("ui.main"))
+                    except Exception as e:
+                        output = f"Redis недоступен: {e}"
+
     job_id = session.get("job_id")
 
-    if job_id:
+    if job_id and REDIS_ENABLED:
         try:
             job = Job.fetch(job_id, connection=redis_conn)
             job_status = job.get_status()
-            if job_status == "finished":
+
+            workers = Worker.all(connection=redis_conn)
+            if not workers:
+                output = f"Worker не запущен \nJob ID: {job_id}"
+                # session.pop("job_id")
+
+            elif job_status == "finished":
                 data = job.result
                 output = (
                     f"DHCP: {data['dhcp_data_mikrotik']}\n"
                     f"Traffic: {data['traffic_data_mikrotik']}\n"
-                    f"Job ID: {job_id}")                
+                    f"Job ID: {job_id}"
+                )
                 session.pop("job_id")
-            elif Worker.count(connection=redis_conn) > 0:
+            else:
                 output = f"Задача выполняется, подождите... \nJob ID: {job_id}"
                 refresh_page = True
-            else:
-                output = f"Worker не запущен \nJob ID: {job_id}"
-                session.pop("job_id")
-        except Exception:
-            output = f"Worker или Redis недоступен \nJob ID: {job_id}"
-            session.pop("job_id")
 
+        except Exception as e:
+            output = f"Worker или Redis недоступен: {e} \nJob ID: {job_id}"
+            session.pop("job_id")
 
     return render_template("main.html", username=session["user"]["username"], output=output, job_status=job_status, refresh_page=refresh_page)
