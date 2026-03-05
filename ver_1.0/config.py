@@ -25,4 +25,5 @@ COLLECT_INTERVAL = int(os.getenv("COLLECT_INTERVAL", 3600))
 SECRET_KEY_SESSION = os.getenv("SECRET_KEY_SESSION")
 
 # REDIS
-REDIS_ENABLED = os.getenv("REDIS_ENABLED")
+# REDIS_ENABLED = os.getenv("REDIS_ENABLED")
+REDIS_ENABLED = os.getenv("REDIS_ENABLED", "false").lower() == "true"
