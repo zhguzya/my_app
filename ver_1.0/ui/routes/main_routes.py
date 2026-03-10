@@ -2,20 +2,14 @@ from flask import Blueprint, redirect, url_for, render_template, request, sessio
 from db_orm import SessionMikrotik, get_data_from_db, DhcpTableOrm
 from collector import refresh_all_data
 from security import require_login
-import csv, io
-from for_redis import refresh_data_worker
-from redis import Redis
-from rq import Queue, Worker
-from rq.job import Job
 import json
 from config import REDIS_ENABLED
+from for_redis import enqueue_job, fetch_job, get_workers
 
 
 
 ui_bp = Blueprint("ui", __name__)
 
-redis_conn = Redis()
-q = Queue(connection=redis_conn)
 
 
 @ui_bp.before_request
@@ -56,7 +50,7 @@ def main():
                 job_id = session.get("job_id")
                 if not job_id:
                     try:
-                        job = q.enqueue(refresh_all_data)
+                        job = enqueue_job(refresh_all_data)
                         session["job_id"] = job.id
                         return redirect(url_for("ui.main"))
                     except Exception as e:
@@ -66,10 +60,10 @@ def main():
 
     if job_id and REDIS_ENABLED:
         try:
-            job = Job.fetch(job_id, connection=redis_conn)
+            job = fetch_job(job_id)
             job_status = job.get_status()
 
-            workers = Worker.all(connection=redis_conn)
+            workers = get_workers()
             if not workers:
                 output = f"Worker не запущен \nJob ID: {job_id}"
                 # session.pop("job_id")
