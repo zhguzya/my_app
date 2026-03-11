@@ -10,8 +10,7 @@ q = Queue(connection=redis_conn)
 
 def enqueue_job(func):
     """Поставить задачу в очередь и вернуть объект Job"""
-    return q.enqueue(func)
-
+    return q.enqueue(func, result_ttl=300, failure_ttl=300, job_timeout=120)
 
 def fetch_job(job_id):
     """Получить задачу по job_id"""

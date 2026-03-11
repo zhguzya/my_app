@@ -78,9 +78,10 @@ def main():
                 session.pop("job_id")
 
             elif job_status == "failed":
-                output = f"Статус задачи - FAILED \nJob ID: {job_id}"
-                # session.pop("job_id")
-                
+                error = job.exc_info
+                output = f"Статус задачи - FAILED \nJob ID: {job_id} \nОшибка:{error}"
+                session.pop("job_id")
+
             else:
                 output = f"Задача выполняется, подождите... \nJob ID: {job_id}"
                 refresh_page = True
