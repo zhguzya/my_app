@@ -1,6 +1,7 @@
 from flask import redirect, url_for, render_template, request, session, Blueprint
 from db_orm import SessionUsers, add_user, UsersTableORM
 from werkzeug.security import generate_password_hash, check_password_hash
+from utils import log_auth, get_client_ip
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -16,6 +17,9 @@ def register():
         password = request.form.get("password")
         password2 = request.form.get("password2")
 
+        ip = get_client_ip(request)
+        user_agent = request.headers.get("User-Agent")
+
         user_data = {
             'username': username,
             'email': email
@@ -23,6 +27,7 @@ def register():
 
         #Проверка на совпадение паролей
         if password != password2:
+            log_auth("REGISTER", email, ip, "FAILED", "password_mismatch", user_agent)
             error = "Пароли не совпадают"
             return render_template("register.html", error=error, user_data=user_data)
 
@@ -31,12 +36,14 @@ def register():
         existing_user = session_db_users.query(UsersTableORM).filter((UsersTableORM.username == username) | (UsersTableORM.email == email)).first()
 
         if existing_user:
+            log_auth("REGISTER", email, ip, "FAILED", "user_exists", user_agent)
             session_db_users.close()
             error = "Пользователь c таким именем или email уже существует"
             return render_template("register.html", error=error,user_data=user_data)
 
         user_data['password_hash'] = generate_password_hash(password)
         add_user(session_db_users, user_data)
+        log_auth("REGISTER", email, ip, "SUCCESS", "ok", user_agent)
         session_db_users.commit()
         session_db_users.close()
 
@@ -73,11 +80,17 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password")
+
+        ip = get_client_ip(request)
+        user_agent = request.headers.get("User-Agent")
+
         current_user = check_credentials(email, password)
         if current_user:
+            log_auth("LOGIN", email, ip, "SUCCESS", "ok", user_agent)
             session["user"] = current_user
             return redirect(url_for("ui.main"))
 
+        log_auth("LOGIN", email, ip, "FAILED", "invalid_credentials", user_agent)
         return render_template("login.html", error=True)
 
     if "user" in session:

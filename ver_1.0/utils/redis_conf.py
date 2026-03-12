@@ -1,4 +1,3 @@
-# redis_utils.py
 from redis import Redis
 from rq import Queue, Worker
 from rq.job import Job
