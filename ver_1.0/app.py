@@ -3,8 +3,6 @@ from api import api_bp
 from ui import auth_bp, ui_bp
 from config import SECRET_KEY_SESSION
 from db_orm import init_db
-# from redis import Redis
-# from rq import Queue
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY_SESSION

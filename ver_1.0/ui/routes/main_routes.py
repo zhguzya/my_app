@@ -4,12 +4,10 @@ from collector import refresh_all_data
 from security import require_login
 import json
 from config import REDIS_ENABLED
-from for_redis import enqueue_job, fetch_job, get_workers
-
+from utils import enqueue_job, fetch_job, get_workers
 
 
 ui_bp = Blueprint("ui", __name__)
-
 
 
 @ui_bp.before_request
