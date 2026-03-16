@@ -1,4 +1,4 @@
-from .redis_conf import enqueue_job, fetch_job, get_workers
+from .redis_conf import enqueue_job, fetch_job, get_workers, schedule_daily_refresh
 from .logger_conf import log_auth, get_client_ip
 
 
@@ -7,5 +7,6 @@ __all__ = [
    "fetch_job",
    "get_workers",
    "log_auth",
-   "get_client_ip"
+   "get_client_ip",
+   "schedule_daily_refresh"
 ]
