@@ -15,9 +15,9 @@ def fetch_job(job_id):
     return Job.fetch(job_id, connection=redis_conn)
 
 def get_workers():
-    """Список активных worker-ов"""
+    """Список активных worker"""
     return Worker.all(connection=redis_conn)
 
 def schedule_daily_refresh(func, repeat_seconds=86400):
-    """Ставим задачу, которая повторяется каждый день"""
+    """Ставим задачу, повтор каждый день"""
     q.enqueue(func, repeat=repeat_seconds, job_id="daily_refresh")
