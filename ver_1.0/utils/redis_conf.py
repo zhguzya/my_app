@@ -1,5 +1,5 @@
 from redis import Redis
-from rq import Queue, Worker
+from rq import Queue, Worker, Repeat
 from rq.job import Job
 
 #соединение и очередь (работают только на VPS)
@@ -20,4 +20,4 @@ def get_workers():
 
 def schedule_daily_refresh(func, repeat_seconds=86400):
     """Ставим задачу, повтор каждый день"""
-    q.enqueue(func, repeat=repeat_seconds, job_id="daily_refresh")
+    q.enqueue(func, repeat=Repeat(times=3650, interval=repeat_seconds), job_id="daily_refresh")

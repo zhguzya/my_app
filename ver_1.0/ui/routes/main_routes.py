@@ -1,8 +1,7 @@
 from flask import Blueprint, redirect, url_for, render_template, request, session, Response
-from db_orm import SessionMikrotik, get_data_from_db, DhcpTableOrm
+from db_orm import SessionMikrotik, get_data_from_db
 from collector import refresh_all_data
 from security import require_login
-import json
 from config import REDIS_ENABLED
 from utils import enqueue_job, fetch_job, get_workers
 
