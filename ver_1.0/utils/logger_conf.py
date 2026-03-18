@@ -4,7 +4,7 @@ from datetime import datetime
 def log_auth(event, login, ip, status, reason, user_agent):
 
     line = (
-        f"{datetime.now()} | "
+        f"{datetime.utcnow()} | "
         f"event={event} | "
         f"login={login} | "
         f"ip={ip} | "
