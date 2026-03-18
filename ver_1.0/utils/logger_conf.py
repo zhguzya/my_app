@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def log_auth(event, login, ip, status, reason, user_agent):
 
     line = (
-        f"{datetime.utcnow()} | "
+        f"{datetime.now(timezone.utc)} | "
         f"event={event} | "
         f"login={login} | "
         f"ip={ip} | "
