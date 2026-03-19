@@ -1,7 +1,6 @@
 from flask import session, Blueprint
 from flask_restx import Api, Resource
-from db_orm import get_data_from_db, SessionMikrotik
-from collector import refresh_all_data
+from db_orm import get_data_from_db, SessionMikrotik, refresh_all_data
 from security import require_login
 
 # Blueprint для API

@@ -1,7 +1,7 @@
 from flask import jsonify
 from redis import Redis
 from rq import Queue
-from collector import refresh_all_data
+from db_orm import refresh_all_data
 
 redis_conn = Redis(host='localhost', port=6379)
 queue = Queue(connection=redis_conn)

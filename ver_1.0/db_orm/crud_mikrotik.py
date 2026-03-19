@@ -1,9 +1,8 @@
-# from db_orm import DhcpTableOrm, TrafficTableOrm, DhcpHistoryTableOrm
 from .models_mikrotik import DhcpTableOrm, DhcpHistoryTableOrm, TrafficTableOrm
-
+from datetime import datetime,timezone
 
 def fill_dhcp_tables(session, mikrotik_dhcp_data):
-    # очистка таблица dhcp_table
+    # очистка таблицы dhcp_table
     session.query(DhcpTableOrm).delete()
 
     dhcp_history_list = session.query(DhcpHistoryTableOrm).all() #список объектов из таблицы DhcpHistoryTableOrm
@@ -47,7 +46,8 @@ def fill_traffic_table(session, mikrotik_traffic_data):
             ip = t["ip"],
             name = t.get("name"),
             rx_Mbytes = t.get("rx_Mbytes"),
-            tx_Mbytes = t.get("tx_Mbytes")
+            tx_Mbytes = t.get("tx_Mbytes"),
+            updated_at = datetime.fromisoformat(t.get("updated_at")) # это данные от микрота (с микротсекундами в бд). можно вообще убрать, SQLA само подставит. 
         )
         session.add(traffic)
 
@@ -56,7 +56,7 @@ def fill_traffic_table(session, mikrotik_traffic_data):
 def get_data_from_db(session):
     dhcp_query = (session.query(DhcpTableOrm).order_by(DhcpTableOrm.updated_at.desc()).all())
     dhcp_history_query = (session.query(DhcpHistoryTableOrm).order_by(DhcpHistoryTableOrm.updated_at.desc()).all())
-    traf_query = (session.query(TrafficTableOrm).order_by(TrafficTableOrm.updated_at.desc()).limit(15).all())
+    traf_query = (session.query(TrafficTableOrm).order_by(TrafficTableOrm.updated_at.desc()).all())
 
     dhcp_list = []
     for d in dhcp_query:
@@ -68,7 +68,7 @@ def get_data_from_db(session):
             "age": d.age,
             "dynamic": d.dynamic,
             "last_seen": d.last_seen,
-            "updated_at": d.updated_at.isoformat() if d.updated_at else None
+            "updated_at": d.updated_at.replace(tzinfo=timezone.utc).isoformat() if d.updated_at else None
         })
 
     dhcp_history_list = []
@@ -80,7 +80,7 @@ def get_data_from_db(session):
             "host_name": dh.host_name,
             "dynamic": dh.dynamic,
             "removed": dh.removed,
-            "updated_at": dh.updated_at.isoformat() if dh.updated_at else None
+            "updated_at": dh.updated_at.replace(tzinfo=timezone.utc).isoformat() if dh.updated_at else None
         })
 
     traf_list = []
@@ -91,9 +91,9 @@ def get_data_from_db(session):
             "name": t.name,
             "rx_Mbytes": t.rx_Mbytes,
             "tx_Mbytes": t.tx_Mbytes,
-            "updated_at": t.updated_at.isoformat() if t.updated_at else None
+            # "updated_at": t.updated_at if t.updated_at else None
+            "updated_at": t.updated_at.replace(tzinfo=timezone.utc).isoformat() if t.updated_at else None
         })
-
 
     session.close()
     return {"dhcp_from_db": dhcp_list,  "dhcp_history_from_db": dhcp_history_list, "traf_from_db": traf_list}
