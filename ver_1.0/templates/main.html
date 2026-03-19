@@ -27,6 +27,84 @@
     <pre>{{ output }}</pre>
   {% endif %}
 
+  {% if dhcp_data %}
+    <br>
+    <details>
+      <summary>DHCP TABLE ({{ dhcp_data|length }} записей)</summary>
+      <table border="1" cellspacing="0" cellpadding="5">
+        <tr>
+          <th>ip</th>
+          <th>mac_address</th>
+          <th>host_name</th>
+          <th>age</th>
+          <th>dynamic</th>
+          <th>last_seen</th>
+        </tr>
+        {% for row in dhcp_data %}
+        <tr>
+          <td>{{ row.ip }}</td>
+          <td>{{ row.mac_address }}</td>
+          <td>{{ row.host_name }}</td>
+          <td>{{ row.age }}</td>
+          <td>{{ row.dynamic }}</td>
+          <td>{{ row.last_seen }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </details>
+  {% endif %}
+
+  {% if dhcp_history %}
+    <br>
+    <details>
+      <summary>DHCP HISTORY TABLE ({{ dhcp_history|length }} записей)</summary>
+      <table border="1" cellspacing="0" cellpadding="5">
+        <tr>
+          <th>ip</th>
+          <th>mac_address</th>
+          <th>host_name</th>
+          <th>dynamic</th>
+          <th>removed</th>
+          <th>updated_at</th>
+        </tr>
+        {% for row in dhcp_history %}
+        <tr>
+          <td>{{ row.ip }}</td>
+          <td>{{ row.mac_address }}</td>
+          <td>{{ row.host_name }}</td>
+          <td>{{ row.dynamic }}</td>
+          <td>{{ row.removed }}</td>
+          <td>{{ row.updated_at }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </details>
+  {% endif %}
+
+  {% if traffic_data %}
+    <br>
+    <details>
+      <summary>TRAFFIC TABLE ({{ traffic_data|length }} записей)</summary>
+      <table border="1" cellspacing="0" cellpadding="5">
+        <tr>
+          <th>ip</th>
+          <th>name</th>
+          <th>rx_Mbytes</th>
+          <th>tx_Mbytes</th>
+          <th>updated_at</th>
+        </tr>
+        {% for row in traffic_data %}
+        <tr>
+          <td>{{ row.ip }}</td>
+          <td>{{ row.name }}</td>
+          <td>{{ row.rx_Mbytes }}</td>
+          <td>{{ row.tx_Mbytes }}</td>
+          <td>{{ row.updated_at }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </details>
+  {% endif %}
 
   <br><a href="{{ url_for('auth.logout') }}">Выйти</a>
   <br><a href="/api">Открыть Swagger API</a>

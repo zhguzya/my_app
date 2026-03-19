@@ -1,6 +1,5 @@
 from flask import Blueprint, redirect, url_for, render_template, request, session, Response
-from db_orm import SessionMikrotik, get_data_from_db
-from collector import refresh_all_data
+from db_orm import SessionMikrotik, get_data_from_db, refresh_all_data
 from security import require_login
 from config import REDIS_ENABLED
 from utils import enqueue_job, fetch_job, get_workers
@@ -19,6 +18,9 @@ def root_redirect():
 
 @ui_bp.route("/main", methods=["GET", "POST"])
 def main():
+    dhcp_data = None
+    traffic_data = None
+    dhcp_history = None
     output = None
     job_status = None 
     refresh_page = False
@@ -28,19 +30,22 @@ def main():
             session_db = SessionMikrotik()
             data = get_data_from_db(session_db)
             session_db.close()
-            output = (f"Получены данные из БД:\n"
-                     f"DHCP: {data['dhcp_from_db']}\n"
-                     f"DHCP_HISTORY: {data['dhcp_history_from_db']}\n"
-                     f"Traffic: {data['traf_from_db']}\n")
-            
-            return render_template("main.html", username=session["user"]["username"], output=output)
+
+            output = (f"Получены данные из БД:")
+            dhcp_data = data['dhcp_from_db']
+            dhcp_history = data['dhcp_history_from_db']
+            traffic_data = data['traf_from_db']
+
+            return render_template("main.html", username=session["user"]["username"], output=output, dhcp_data=dhcp_data, traffic_data=traffic_data, dhcp_history=dhcp_history)
 
         elif "from_mikrotik" in request.form:
 
             if not REDIS_ENABLED:
                 # На Mac: вызываем функцию и сразу показываем результат
                 data = refresh_all_data()
-                output = f"Обновлены данные с Mikrotik: {data}"
+                output = f"Обновлены данные с Mikrotik:"
+                dhcp_data = data['dhcp_data_mikrotik']
+                traffic_data = data['traffic_data_mikrotik']
             
             else:
                 # на VPS создаем задачу
@@ -67,11 +72,9 @@ def main():
 
             elif job_status == "finished":
                 data = job.result
-                output = (
-                    f"DHCP: {data['dhcp_data_mikrotik']}\n"
-                    f"Traffic: {data['traffic_data_mikrotik']}\n"
-                    f"Job ID: {job_id}"
-                )
+                output = f"Job ID: {job_id}"
+                dhcp_data = data['dhcp_data_mikrotik']
+                traffic_data = data['traffic_data_mikrotik']
                 session.pop("job_id")
 
             elif job_status == "failed":
@@ -87,4 +90,4 @@ def main():
             output = f"Worker или Redis недоступен: {e} \nJob ID: {job_id}"
             session.pop("job_id")
 
-    return render_template("main.html", username=session["user"]["username"], output=output, job_status=job_status, refresh_page=refresh_page)
+    return render_template("main.html", username=session["user"]["username"], output=output, job_status=job_status, refresh_page=refresh_page, dhcp_data=dhcp_data, traffic_data=traffic_data)

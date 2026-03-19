@@ -1,9 +1,11 @@
 from .base import BaseMikrotik, BaseUsers, engine_mikrotik, engine_users, SessionMikrotik, SessionUsers
 from .models_mikrotik import DhcpTableOrm, TrafficTableOrm, DhcpHistoryTableOrm
 from .models_users import UsersTableORM
-from .crud import fill_dhcp_tables, fill_traffic_table, get_data_from_db
+from .crud_mikrotik import fill_dhcp_tables, fill_traffic_table, get_data_from_db
 from .crud_users import add_user
 from .init_db import init_db
+from .update_db import refresh_all_data
+
 
 __all__ = [
     "BaseMikrotik",
@@ -20,5 +22,6 @@ __all__ = [
     "fill_traffic_table",
     "get_data_from_db",
     "add_user",
-    "init_db"
+    "init_db",
+    "refresh_all_data"
 ]

@@ -1,5 +1,6 @@
 import requests
 from config import MIKROTIK_USER, MIKROTIK_PASSWORD, URL_DHCP_TABLE, URL_TRAFFIC_TABLE
+from datetime import datetime, timezone
 
 
 def get_dhcp_table_from_mikrotik():
@@ -23,7 +24,8 @@ def get_traffic_from_mikrotik():
             'name': device['name'], 
             'ip': device['target'].split('/')[0], 
             'rx_Mbytes': round(int(device['bytes'].split('/')[0])/1024/1024, 3), 
-            'tx_Mbytes': round(int(device['bytes'].split('/')[1])/1024/1024, 3)})     
+            'tx_Mbytes': round(int(device['bytes'].split('/')[1])/1024/1024, 3), 
+            'updated_at': datetime.now(timezone.utc).replace(microsecond=0).isoformat()})
     return result_traffic
     
 if __name__ == "__main__":
